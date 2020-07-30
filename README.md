@@ -1,6 +1,6 @@
 # colltest
 
-Test colltask app.
+Yee-haw?
 
 ## Getting Started
 
