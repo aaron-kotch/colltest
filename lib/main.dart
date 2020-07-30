@@ -1,4 +1,5 @@
 import 'package:colltest/drawer.dart';
+import 'package:colltest/login_view.dart';
 import 'package:colltest/settings_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       child: MaterialApp(
-        home: Home(),
+        home: LoginPage(),
       ),
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<DrawerStateInfo>(
