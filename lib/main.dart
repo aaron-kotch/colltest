@@ -1,20 +1,29 @@
-import 'package:colltest/drawer.dart';
 import 'package:colltest/login_view.dart';
 import 'package:colltest/settings_view.dart';
+import 'package:colltest/signup_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'home_view.dart';
 import 'package:animations/animations.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       child: MaterialApp(
-        home: LoginPage(),
+        home: SplashPage(),
+        routes: <String, WidgetBuilder>{
+          '/home': (BuildContext context) => Home(),
+          '/login': (BuildContext context) => LoginPage(),
+          '/signup': (BuildContext context) => SignupPage(),
+        }
       ),
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<DrawerStateInfo>(
@@ -23,6 +32,71 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class SplashPage extends StatefulWidget {
+  SplashPage({Key key}) : super(key: key);
+
+  @override
+  _SplashPageState createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  initState() {
+    FirebaseAuth.instance
+        .currentUser()
+        .then((currentUser) => {
+          if (currentUser == null) {
+            Navigator.pushReplacementNamed(context, "/login")
+          }
+          else {
+            Navigator.pushReplacementNamed(context, "/home")
+          }
+        });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.lime[300],
+          child: Container(
+            alignment: Alignment(0,0.1),
+            child: SizedBox(
+              width: 250,
+              height: 400,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    width: 120,
+                    height: 120,
+                    margin: EdgeInsets.only(bottom: 96),
+                    child: ClipOval(
+                      child: Material(
+                        color: Colors.white,
+                        child: Icon(
+                          Icons.assignment,
+                          color: Colors.cyan[800],
+                          size: 40,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 
 class DrawerStateInfo with ChangeNotifier {
   int _currentDrawer = 0;
@@ -121,6 +195,5 @@ class SharedAxisPageRoute extends PageRouteBuilder {
     },
   );
 }
-
 
 
