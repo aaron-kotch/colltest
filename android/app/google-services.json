@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "735008791384",
+    "firebase_url": "https://colltask.firebaseio.com",
+    "project_id": "colltask",
+    "storage_bucket": "colltask.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735008791384:android:daa176b907930e92eca32d",
+        "android_client_info": {
+          "package_name": "com.aaronkotch.colltask"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "735008791384-ks5bhub5tbql342nqtnulnpl7hv4r4d7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_FMF82OA0m7LkU33exc6HQcfTTIGZplM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "735008791384-ks5bhub5tbql342nqtnulnpl7hv4r4d7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
