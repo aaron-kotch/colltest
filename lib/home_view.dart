@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -21,9 +22,7 @@ File newImage;
 
 final List<Widget> imgList = [
   Card(
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10)
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
   ),
   Card(
     shape: RoundedRectangleBorder(
@@ -31,7 +30,6 @@ final List<Widget> imgList = [
     ),
   ),
 ];
-
 
 class Home extends StatefulWidget {
   @override
@@ -72,7 +70,8 @@ class _HomeState extends State<Home> {
                               top: 50,
                               left: 0,
                               child: Container(
-                                padding: EdgeInsets.only(left: 64, top: 32, bottom: 32),
+                                padding: EdgeInsets.only(
+                                    left: 64, top: 32, bottom: 32),
                                 color: Colors.lightGreen[300],
                                 child: Text(
                                   "Hello, Aaron",
@@ -88,23 +87,23 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                             Positioned(
-                              top: 90,
-                              left: 0,
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 64, top: 32, bottom: 32),
-                                child: Text(
-                                  "Pick up where you've left off",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontFamily: 'SourceSansPro',
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.grey[800],
-                                    letterSpacing: 0.25,
+                                top: 90,
+                                left: 0,
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 64, top: 32, bottom: 32),
+                                  child: Text(
+                                    "Pick up where you've left off",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'SourceSansPro',
+                                      fontWeight: FontWeight.w300,
+                                      color: Colors.grey[800],
+                                      letterSpacing: 0.25,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                            )
+                                ))
                           ],
                         ),
                       ),
@@ -122,13 +121,39 @@ class _HomeState extends State<Home> {
                           height: 350,
                         ),
                         items: imageSliders,
-                        ),
                       ),
-                    SizedBox(
+                    ),
+                    Container(
                       height: 200,
-                      child: Container(
-                        color: Colors.lightGreen[300],
-                      ),
+                      color: Colors.lightGreen[300],
+                      child: Column(
+                          children: <Widget> [
+                            Container(
+                              padding: EdgeInsets.only(top: 32),
+                              child: FlatButton(
+                                color: Colors.yellow[300],
+                                child: Text(
+                                  "Sign Out",
+                                ),
+                                onPressed: () {
+                                  _signOut();
+                                  Navigator.pushReplacementNamed(context, "/login");
+                                },
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.only(top: 32),
+                              child: FlatButton(
+                                color: Colors.yellow[300],
+                                child: Text(
+                                  "Check",
+                                ),
+                                onPressed: () {
+                                  checkImage();
+                                },
+                              ),
+                            ),
+                          ]),
                     )
                   ],
                 ),
@@ -185,10 +210,10 @@ class _HomeState extends State<Home> {
   Future saveImage(_croppedImage) async {
     //final _savedImage = _croppedImage;
 
-    if (_croppedImage == null) {
-      print("nop");
-    } else {
+    if (_croppedImage != null) {
       print("ok");
+    } else {
+      print("nope");
     }
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -198,13 +223,12 @@ class _HomeState extends State<Home> {
 
     if (await File('$appDocPath/profilepic.png').exists()) {
       print("$appDocPath");
+      imageCache.evict(FileImage(File(_imagePath)));
     } else {
       print("nope");
     }
 
     newImage = await _croppedImage.copy('$appDocPath/profilepic.png');
-
-    imageCache.evict(FileImage(File(_imagePath)));
 
     prefs = await SharedPreferences.getInstance();
     prefs.setString('collImage', newImage.path);
@@ -225,11 +249,20 @@ class _HomeState extends State<Home> {
     }
   }
 
-  final List<Widget> imageSliders = imgList.map((item) => Container(
-    color: Colors.lightGreen[300],
-    width: 400,
-    child: item,
-  )).toList();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  _signOut() async {
+    await _firebaseAuth.signOut();
+    print("signed out");
+  }
+
+  final List<Widget> imageSliders = imgList
+      .map((item) => Container(
+            color: Colors.lightGreen[300],
+            width: 400,
+            child: item,
+          ))
+      .toList();
 }
 
 class MyAppBar extends StatefulWidget {

@@ -43,16 +43,7 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   initState() {
-    FirebaseAuth.instance
-        .currentUser()
-        .then((currentUser) => {
-          if (currentUser == null) {
-            Navigator.pushReplacementNamed(context, "/login")
-          }
-          else {
-            Navigator.pushReplacementNamed(context, "/home")
-          }
-        });
+    getUser();
     super.initState();
   }
 
@@ -94,6 +85,21 @@ class _SplashPageState extends State<SplashPage> {
       ),
     );
   }
+
+  void getUser() async {
+
+    final currUser = await FirebaseAuth.instance.currentUser();
+
+    if (currUser != null) {
+      Navigator.pushReplacementNamed(context, "/home");
+      print(currUser);
+    }
+    else {
+      print("no user");
+      Navigator.pushReplacementNamed(context, "/login");
+    }
+  }
+
 }
 
 
