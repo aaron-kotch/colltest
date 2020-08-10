@@ -18,13 +18,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       child: MaterialApp(
-        home: SplashPage(),
-        routes: <String, WidgetBuilder>{
+        theme: ThemeData(
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: SharedAxisPageTransitionsBuilder(
+                transitionType: SharedAxisTransitionType.horizontal,
+              ),
+              TargetPlatform.iOS: SharedAxisPageTransitionsBuilder(
+                transitionType: SharedAxisTransitionType.horizontal,
+              ),
+            },
+          ),
+        ),
+          home: SplashPage(), routes: <String, WidgetBuilder>{
           '/home': (BuildContext context) => Home(),
           '/login': (BuildContext context) => LoginPage(),
           '/signup': (BuildContext context) => SignupPage(),
-        }
-      ),
+      }),
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<DrawerStateInfo>(
             create: (_) => DrawerStateInfo()),
@@ -56,7 +66,7 @@ class _SplashPageState extends State<SplashPage> {
           height: MediaQuery.of(context).size.height,
           color: Colors.lime[300],
           child: Container(
-            alignment: Alignment(0,0.1),
+            alignment: Alignment(0, 0.1),
             child: SizedBox(
               width: 250,
               height: 400,
@@ -87,22 +97,17 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void getUser() async {
-
     final currUser = await FirebaseAuth.instance.currentUser();
 
     if (currUser != null) {
       Navigator.pushReplacementNamed(context, "/home");
       print(currUser);
-    }
-    else {
+    } else {
       print("no user");
       Navigator.pushReplacementNamed(context, "/login");
     }
   }
-
 }
-
-
 
 class DrawerStateInfo with ChangeNotifier {
   int _currentDrawer = 0;
@@ -151,7 +156,9 @@ class AppDrawer extends StatelessWidget {
                 Provider.of<DrawerStateInfo>(context, listen: false)
                     .setCurrentDrawer(0);
 
-                final route = SharedAxisPageRoute(page: Home(), transitionType: SharedAxisTransitionType.horizontal);
+                final route = SharedAxisPageRoute(
+                    page: Home(),
+                    transitionType: SharedAxisTransitionType.horizontal);
                 Navigator.of(context).pushReplacement(route);
               }),
           ListTile(
@@ -169,7 +176,9 @@ class AppDrawer extends StatelessWidget {
                 Provider.of<DrawerStateInfo>(context, listen: false)
                     .setCurrentDrawer(1);
 
-                final route = SharedAxisPageRoute(page: Settings(), transitionType: SharedAxisTransitionType.horizontal);
+                final route = SharedAxisPageRoute(
+                    page: Settings(),
+                    transitionType: SharedAxisTransitionType.horizontal);
                 Navigator.of(context).pushReplacement(route);
               })
         ],
@@ -179,27 +188,52 @@ class AppDrawer extends StatelessWidget {
 }
 
 class SharedAxisPageRoute extends PageRouteBuilder {
-  SharedAxisPageRoute({Widget page,
-  SharedAxisTransitionType transitionType}) : super(
-    pageBuilder: (
-    BuildContext context,
-        Animation<double>primaryAnimation,
-        Animation<double>secondaryAnimation,
-    ) => page,
-    transitionsBuilder: (
-    BuildContext context,
-        Animation<double> primaryAnimation,
-        Animation<double> secondaryAnimation,
-        Widget child,
-    ){
-      return SharedAxisTransition(
-          animation: primaryAnimation,
-          secondaryAnimation: secondaryAnimation,
-          transitionType: transitionType,
-          child: child,
-      );
-    },
-  );
+  SharedAxisPageRoute({Widget page, SharedAxisTransitionType transitionType})
+      : super(
+          pageBuilder: (
+            BuildContext context,
+            Animation<double> primaryAnimation,
+            Animation<double> secondaryAnimation,
+          ) =>
+              page,
+          transitionsBuilder: (
+            BuildContext context,
+            Animation<double> primaryAnimation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) {
+            return SharedAxisTransition(
+              animation: primaryAnimation,
+              secondaryAnimation: secondaryAnimation,
+              transitionType: transitionType,
+              child: child,
+            );
+          },
+        );
 }
 
-
+class FadeThroughPageRoute extends PageRouteBuilder {
+  final Widget page;
+  FadeThroughPageRoute({this.page})
+      : super(
+          pageBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) =>
+              page,
+          transitionsBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) =>
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(1, 0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+          ),
+        );
+}

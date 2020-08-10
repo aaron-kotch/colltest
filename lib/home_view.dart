@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:animations/animations.dart';
+import 'package:colltest/login_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -48,8 +50,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarIconBrightness: Brightness.light,
-        statusBarColor: Colors.lightGreen,
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
         body: SafeArea(
@@ -137,7 +139,10 @@ class _HomeState extends State<Home> {
                                 ),
                                 onPressed: () {
                                   _signOut();
-                                  Navigator.pushReplacementNamed(context, "/login");
+                                  final route = SharedAxisPageRoute(
+                                      page: LoginPage(),
+                                      transitionType: SharedAxisTransitionType.horizontal);
+                                  Navigator.of(context).pushReplacement(route);
                                 },
                               ),
                             ),

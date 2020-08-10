@@ -1,6 +1,11 @@
+import 'package:animations/animations.dart';
+import 'package:colltest/home_view.dart';
+import 'package:colltest/main.dart';
+import 'package:colltest/signup_view.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -82,89 +87,98 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 )
                             ),
-                            Container(
-                              child: TextFormField(
-                                textAlign: TextAlign.left,
-                                cursorColor: Colors.yellow[400],
-                                controller: emailInputController,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: emailValidator,
-                                style: TextStyle(
-                                  fontFamily: "SourceSansPro",
-                                  fontWeight: FontWeight.w300,
-                                ),
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                  contentPadding:
-                                  EdgeInsets.only(
-                                      left: 20, top: 20, bottom: 20),
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide()),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.grey[200],
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.grey[200],
+                            Hero(
+                                tag: 'emailfield',
+                                child: Material(
+                                  child: Container(
+                                    child: TextFormField(
+                                      textAlign: TextAlign.left,
+                                      cursorColor: Colors.yellow[400],
+                                      controller: emailInputController,
+                                      keyboardType: TextInputType.emailAddress,
+                                      validator: emailValidator,
+                                      style: TextStyle(
+                                        fontFamily: "SourceSansPro",
+                                        fontWeight: FontWeight.w300,
                                       ),
-                                      borderRadius: BorderRadius.circular(8)),
-                                  hintText: 'E-mail',
-                                  hintStyle: TextStyle(
-                                    fontFamily: "SourceSansPro",
-                                    fontWeight: FontWeight.w300,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.grey[200],
+                                        contentPadding:
+                                        EdgeInsets.only(
+                                            left: 20, top: 20, bottom: 20),
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide()),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.grey[200],
+                                          ),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.grey[200],
+                                            ),
+                                            borderRadius: BorderRadius.circular(8)),
+                                        hintText: 'E-mail',
+                                        hintStyle: TextStyle(
+                                          fontFamily: "SourceSansPro",
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
+                                )
                             ),
-                            Container(
-                                margin: EdgeInsets.only(top: 16, bottom: 16),
-                                child: TextFormField(
-                                  cursorColor: Colors.yellow[400],
-                                  controller: pwdInputController,
-                                  obscureText: true,
-                                  validator: pwdValidator,
-                                  style: TextStyle(
-                                    fontFamily: "SourceSansPro",
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.grey[200],
-                                    contentPadding:
-                                    EdgeInsets.only(
-                                        left: 20, top: 20, bottom: 20),
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide()),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.grey[200],
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.grey[200],
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    hintText: 'Password',
-                                    hintStyle: TextStyle(
-                                      fontFamily: "SourceSansPro",
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                    focusColor: Colors.yellow[400],
-                                  ),
-                                )),
+                            Hero(
+                                tag: 'pwdfield',
+                                child: Material(
+                                  child: Container(
+                                      margin: EdgeInsets.only(top: 16, bottom: 16),
+                                      child: TextFormField(
+                                        cursorColor: Colors.yellow[400],
+                                        controller: pwdInputController,
+                                        obscureText: true,
+                                        validator: pwdValidator,
+                                        style: TextStyle(
+                                          fontFamily: "SourceSansPro",
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.grey[200],
+                                          contentPadding:
+                                          EdgeInsets.only(
+                                              left: 20, top: 20, bottom: 20),
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide()),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.grey[200],
+                                            ),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.grey[200],
+                                            ),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          hintText: 'Password',
+                                          hintStyle: TextStyle(
+                                            fontFamily: "SourceSansPro",
+                                            fontWeight: FontWeight.w300,
+                                          ),
+                                          focusColor: Colors.yellow[400],
+                                        ),
+                                      )),
+                                )
+                            ),
                             ButtonTheme(
                               height: 50,
                               minWidth: 250,
                               child: FlatButton(
-                                disabledColor: Colors.yellow[200],
-                                color: Colors.yellow[300],
+                                color: Colors.blue[500],
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -173,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                                   style: TextStyle(
                                     fontFamily: "SourceSansPro",
                                     fontWeight: FontWeight.w700,
-                                    color: Colors.grey[700],
+                                    color: Colors.white,
                                   ),
                                 ),
                                 onPressed: () {
@@ -213,9 +227,9 @@ class _LoginPageState extends State<LoginPage> {
                               height: 0,
                               child: FlatButton(
                                 child: Text(
-                                  "Sign in",
+                                  "Sign up",
                                   style: TextStyle(
-                                    color: Colors.blue[600],
+                                    color: Colors.blue[500],
                                     fontFamily: "SourceSansPro",
                                     fontWeight: FontWeight.w700,
                                     fontSize: 16,
@@ -252,7 +266,10 @@ class _LoginPageState extends State<LoginPage> {
       print((e.toString()));
     } finally {
       if (user != null) {
-        Navigator.pushReplacementNamed(context, "/home");
+        final route = SharedAxisPageRoute(
+            page: Home(),
+            transitionType: SharedAxisTransitionType.scaled);
+        Navigator.of(context).pushReplacement(route);
       } else {
         print("sign in failed!");
       }
