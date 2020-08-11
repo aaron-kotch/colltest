@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:animations/animations.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colltest/login_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,11 +26,13 @@ File newImage;
 final List<Widget> imgList = [
   Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    color: Colors.blue[500],
   ),
   Card(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10),
     ),
+    color: Colors.blue[500],
   ),
 ];
 
@@ -65,7 +68,7 @@ class _HomeState extends State<Home> {
                     SizedBox(
                       height: 250,
                       child: Container(
-                        color: Colors.lightGreen[300],
+                        color: Colors.white,
                         child: Stack(
                           children: <Widget>[
                             Positioned(
@@ -74,18 +77,40 @@ class _HomeState extends State<Home> {
                               child: Container(
                                 padding: EdgeInsets.only(
                                     left: 64, top: 32, bottom: 32),
-                                color: Colors.lightGreen[300],
-                                child: Text(
-                                  "Hello, Aaron",
-                                  style: TextStyle(
-                                    fontSize: 34,
-                                    fontFamily: 'SourceSansPro',
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.grey[800],
-                                    letterSpacing: 0.25,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
+                                color: Colors.white,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "Hello, ",
+                                      style: TextStyle(
+                                        fontSize: 34,
+                                        fontFamily: 'SourceSansPro',
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.grey[800],
+                                        letterSpacing: 0.25,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    FutureBuilder(
+                                      future: userName(),
+                                      builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                        if (snapshot.connectionState == ConnectionState.done) {
+                                          return Text(snapshot.data.data["username"],
+                                            style: TextStyle(
+                                              fontSize: 34,
+                                              fontFamily: 'SourceSansPro',
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.grey[800],
+                                              letterSpacing: 0.25,
+                                            ),);
+                                        } else if (snapshot.connectionState == ConnectionState.none) {
+                                          return Text("No data");
+                                        }
+                                        return CircularProgressIndicator();
+                                      },
+                                    ),
+                                  ],
+                                )
                               ),
                             ),
                             Positioned(
@@ -112,7 +137,7 @@ class _HomeState extends State<Home> {
                     ),
                     Container(
                       height: 350,
-                      color: Colors.lightGreen[300],
+                      color: Colors.white,
                       child: CarouselSlider(
                         options: CarouselOptions(
                           enableInfiniteScroll: false,
@@ -127,15 +152,18 @@ class _HomeState extends State<Home> {
                     ),
                     Container(
                       height: 200,
-                      color: Colors.lightGreen[300],
+                      color: Colors.white,
                       child: Column(
                           children: <Widget> [
                             Container(
                               padding: EdgeInsets.only(top: 32),
                               child: FlatButton(
-                                color: Colors.yellow[300],
+                                color: Colors.blue[500],
                                 child: Text(
                                   "Sign Out",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
                                 ),
                                 onPressed: () {
                                   _signOut();
@@ -149,12 +177,15 @@ class _HomeState extends State<Home> {
                             Container(
                               padding: EdgeInsets.only(top: 32),
                               child: FlatButton(
-                                color: Colors.yellow[300],
+                                color: Colors.blue[500],
                                 child: Text(
                                   "Check",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
                                 ),
                                 onPressed: () {
-                                  checkImage();
+                                  userName();
                                 },
                               ),
                             ),
@@ -178,6 +209,21 @@ class _HomeState extends State<Home> {
         drawer: AppDrawer("Home"),
       ),
     );
+  }
+
+  Future<DocumentSnapshot> userName() async {
+    final auth = FirebaseAuth.instance;
+    final FirebaseUser user = await auth.currentUser();
+    final uid = user.uid;
+
+    if (user != null) {
+      print(uid);
+    }
+
+    return await Firestore.instance
+        .collection("users")
+        .document(user.uid)
+        .get();
   }
 
   final picker = ImagePicker();
@@ -263,7 +309,7 @@ class _HomeState extends State<Home> {
 
   final List<Widget> imageSliders = imgList
       .map((item) => Container(
-            color: Colors.lightGreen[300],
+            color: Colors.white,
             width: 400,
             child: item,
           ))
@@ -284,13 +330,13 @@ class _MyAppBarState extends State<MyAppBar> {
         snap: true,
         titleSpacing: 12,
         elevation: 4,
-        backgroundColor: Colors.lightGreen[300],
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         leading: Hero(
           tag: "appbar",
           child: ClipOval(
             child: Material(
-              color: Colors.lightGreen[300], // button color
+              color: Colors.white, // button color
               child: InkWell(
                 splashColor: Colors.white, // inkwell color
                 child: SizedBox(

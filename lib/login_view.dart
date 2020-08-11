@@ -252,12 +252,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void signIn() async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
 
     FirebaseUser user;
 
     try {
-      user = (await _auth.signInWithEmailAndPassword(
+      user = (await auth.signInWithEmailAndPassword(
         email: emailInputController.text,
         password: pwdInputController.text,
       ))
