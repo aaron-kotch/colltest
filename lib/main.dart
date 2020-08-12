@@ -1,4 +1,5 @@
 import 'package:colltest/login_view.dart';
+import 'package:colltest/newTask_view.dart';
 import 'package:colltest/settings_view.dart';
 import 'package:colltest/signup_view.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
           '/home': (BuildContext context) => Home(),
           '/login': (BuildContext context) => LoginPage(),
           '/signup': (BuildContext context) => SignupPage(),
+          '/newtask': (BuildContext context) => NewTask(),
       }),
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<DrawerStateInfo>(

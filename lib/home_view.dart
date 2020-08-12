@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colltest/login_view.dart';
+import 'package:colltest/newTask_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +26,18 @@ File newImage;
 
 final List<Widget> imgList = [
   Card(
+    margin: EdgeInsets.only(left: 16, right: 8),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     color: Colors.blue[500],
   ),
   Card(
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-    ),
+    margin: EdgeInsets.only(left: 8, right: 8),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    color: Colors.blue[500],
+  ),
+  Card(
+    margin: EdgeInsets.only(left: 8, right: 8),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     color: Colors.blue[500],
   ),
 ];
@@ -56,157 +62,210 @@ class _HomeState extends State<Home> {
         statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
       ),
-      child: Scaffold(
-        body: SafeArea(
-          top: true,
-          child: CustomScrollView(
-            slivers: [
-              MyAppBar(),
-              SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    SizedBox(
-                      height: 250,
-                      child: Container(
-                        color: Colors.white,
-                        child: Stack(
-                          children: <Widget>[
-                            Positioned(
-                              top: 50,
-                              left: 0,
+      child: FutureBuilder(
+        future: userName(),
+        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return AnimatedSwitcher(
+              duration: Duration(seconds: 1),
+              child: Scaffold(
+                body: SafeArea(
+                  top: true,
+                  child: CustomScrollView(
+                    slivers: [
+                      MyAppBar(),
+                      SliverList(
+                        delegate: SliverChildListDelegate(
+                          [
+                            SizedBox(
+                              height: 250,
                               child: Container(
-                                padding: EdgeInsets.only(
-                                    left: 64, top: 32, bottom: 32),
                                 color: Colors.white,
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Hello, ",
-                                      style: TextStyle(
-                                        fontSize: 34,
-                                        fontFamily: 'SourceSansPro',
-                                        fontWeight: FontWeight.w900,
-                                        color: Colors.grey[800],
-                                        letterSpacing: 0.25,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                child: Stack(
+                                  children: <Widget>[
+                                    Positioned(
+                                      top: 50,
+                                      left: 0,
+                                      child: Container(
+                                          padding: EdgeInsets.only(
+                                              left: 64, top: 32, bottom: 32),
+                                          color: Colors.white,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "Hello, ",
+                                                style: TextStyle(
+                                                  fontSize: 34,
+                                                  fontFamily: 'SourceSansPro',
+                                                  fontWeight: FontWeight.w900,
+                                                  color: Colors.grey[800],
+                                                  letterSpacing: 0.25,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              Text(
+                                                snapshot.data.data["username"],
+                                                style: TextStyle(
+                                                  fontSize: 34,
+                                                  fontFamily: 'SourceSansPro',
+                                                  fontWeight: FontWeight.w900,
+                                                  color: Colors.grey[800],
+                                                  letterSpacing: 0.25,
+                                                ),
+                                              ),
+                                            ],
+                                          )),
                                     ),
-                                    FutureBuilder(
-                                      future: userName(),
-                                      builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                        if (snapshot.connectionState == ConnectionState.done) {
-                                          return Text(snapshot.data.data["username"],
+                                    Positioned(
+                                        top: 90,
+                                        left: 0,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 64, top: 32, bottom: 32),
+                                          child: Text(
+                                            "Pick up where you've left off",
                                             style: TextStyle(
-                                              fontSize: 34,
+                                              fontSize: 16,
                                               fontFamily: 'SourceSansPro',
-                                              fontWeight: FontWeight.w900,
+                                              fontWeight: FontWeight.w300,
                                               color: Colors.grey[800],
                                               letterSpacing: 0.25,
-                                            ),);
-                                        } else if (snapshot.connectionState == ConnectionState.none) {
-                                          return Text("No data");
-                                        }
-                                        return CircularProgressIndicator();
-                                      },
-                                    ),
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ))
                                   ],
-                                )
+                                ),
                               ),
                             ),
-                            Positioned(
-                                top: 90,
-                                left: 0,
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      left: 64, top: 32, bottom: 32),
-                                  child: Text(
-                                    "Pick up where you've left off",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: 'SourceSansPro',
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.grey[800],
-                                      letterSpacing: 0.25,
+                            Container(
+                              height: 350,
+                              color: Colors.white,
+                              child: CarouselSlider(
+                                options: CarouselOptions(
+                                  enableInfiniteScroll: false,
+                                  autoPlay: false,
+                                  viewportFraction: 0.75,
+                                  enlargeCenterPage: false,
+                                  height: 350,
+                                ),
+                                items: imageSliders,
+                              ),
+                            ),
+                            Container(
+                              height: 200,
+                              color: Colors.white,
+                              child: Column(children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.only(top: 32),
+                                  child: FlatButton(
+                                    color: Colors.blue[500],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
                                     ),
-                                    textAlign: TextAlign.center,
+                                    child: Text(
+                                      "Sign Out",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      _signOut();
+                                      final route = SharedAxisPageRoute(
+                                          page: LoginPage(),
+                                          transitionType:
+                                              SharedAxisTransitionType
+                                                  .horizontal);
+                                      Navigator.of(context)
+                                          .pushReplacement(route);
+                                    },
                                   ),
-                                ))
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(top: 32),
+                                  child: FlatButton(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    color: Colors.blue[500],
+                                    child: Text(
+                                      "Check",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      userName();
+                                    },
+                                  ),
+                                ),
+                              ]),
+                            )
                           ],
                         ),
                       ),
-                    ),
-                    Container(
-                      height: 350,
-                      color: Colors.white,
-                      child: CarouselSlider(
-                        options: CarouselOptions(
-                          enableInfiniteScroll: false,
-                          autoPlay: false,
-                          viewportFraction: 0.75,
-                          enlargeCenterPage: true,
-                          enlargeStrategy: CenterPageEnlargeStrategy.height,
-                          height: 350,
-                        ),
-                        items: imageSliders,
+                    ],
+                  ),
+                ),
+                floatingActionButton: OpenContainer(
+                  closedShape: CircleBorder(),
+                  closedElevation: 6,
+                  transitionDuration: Duration(milliseconds: 500),
+                  closedBuilder: (BuildContext c, VoidCallback action) => Container(
+                    width: 56,
+                    height: 56,
+                    child: FlatButton(
+                      color: Colors.blueAccent,
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
                       ),
+                      onPressed: () =>  action(),
                     ),
-                    Container(
-                      height: 200,
-                      color: Colors.white,
-                      child: Column(
-                          children: <Widget> [
-                            Container(
-                              padding: EdgeInsets.only(top: 32),
-                              child: FlatButton(
-                                color: Colors.blue[500],
-                                child: Text(
-                                  "Sign Out",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  _signOut();
-                                  final route = SharedAxisPageRoute(
-                                      page: LoginPage(),
-                                      transitionType: SharedAxisTransitionType.horizontal);
-                                  Navigator.of(context).pushReplacement(route);
-                                },
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.only(top: 32),
-                              child: FlatButton(
-                                color: Colors.blue[500],
-                                child: Text(
-                                  "Check",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  userName();
-                                },
-                              ),
-                            ),
-                          ]),
-                    )
-                  ],
+                  ),
+                  openBuilder: (BuildContext c, VoidCallback action) => NewTask(),
+                  tappable: false,
+                ),
+                drawer: AppDrawer("Home"),
+              ),
+            );
+          } else if (snapshot.connectionState == ConnectionState.none) {
+            return Text("No data");
+          }
+          return AnimatedSwitcher(
+            duration: Duration(milliseconds: 500),
+            child: Material(
+              child: Container(
+                alignment: Alignment.center,
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 300,
+                  padding: EdgeInsets.only(left: 32, right: 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        height: 50,
+                        child: Text(
+                          "Loading",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: "SourceSansPro",
+                            fontWeight: FontWeight.w300,
+                            fontSize: 24,
+                          ),
+                        ),
+                      ),
+                      CircularProgressIndicator()
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            getImage();
-          },
-          child: Icon(Icons.create),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.grey[800],
-          elevation: 6,
-        ),
-        drawer: AppDrawer("Home"),
+            )
+          );
+        },
       ),
     );
   }

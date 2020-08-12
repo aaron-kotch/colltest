@@ -51,204 +51,189 @@ class _LoginPageState extends State<LoginPage> {
     ));
     return SafeArea(
         child: Scaffold(
-          body: Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              color: Colors.white,
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.center,
-                    child: Container(
-                      width: 250,
-                      height: 400,
-                      child: Form(
-                        key: _loginFormKey,
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                                alignment: Alignment.centerLeft,
-                                //color: Colors.yellow[300],
-                                margin: EdgeInsets.only(bottom: 40),
-                                width: 300,
-                                height: 120,
-                                child: Text(
-                                  "Sign In",
-                                  style: TextStyle(
-                                    fontFamily: "SourceSansPro",
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 48,
-                                  ),
-                                )
-                            ),
-                            Hero(
-                                tag: 'emailfield',
-                                child: Material(
-                                  child: Container(
-                                    child: TextFormField(
-                                      textAlign: TextAlign.left,
-                                      cursorColor: Colors.yellow[400],
-                                      controller: emailInputController,
-                                      keyboardType: TextInputType.emailAddress,
-                                      validator: emailValidator,
-                                      style: TextStyle(
-                                        fontFamily: "SourceSansPro",
-                                        fontWeight: FontWeight.w300,
-                                      ),
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Colors.grey[200],
-                                        contentPadding:
-                                        EdgeInsets.only(
-                                            left: 20, top: 20, bottom: 20),
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide()),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Colors.grey[200],
-                                          ),
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.grey[200],
-                                            ),
-                                            borderRadius: BorderRadius.circular(8)),
-                                        hintText: 'E-mail',
-                                        hintStyle: TextStyle(
-                                          fontFamily: "SourceSansPro",
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                            ),
-                            Hero(
-                                tag: 'pwdfield',
-                                child: Material(
-                                  child: Container(
-                                      margin: EdgeInsets.only(top: 16, bottom: 16),
-                                      child: TextFormField(
-                                        cursorColor: Colors.yellow[400],
-                                        controller: pwdInputController,
-                                        obscureText: true,
-                                        validator: pwdValidator,
-                                        style: TextStyle(
-                                          fontFamily: "SourceSansPro",
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.grey[200],
-                                          contentPadding:
-                                          EdgeInsets.only(
-                                              left: 20, top: 20, bottom: 20),
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide()),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.grey[200],
-                                            ),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.grey[200],
-                                            ),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          hintText: 'Password',
-                                          hintStyle: TextStyle(
-                                            fontFamily: "SourceSansPro",
-                                            fontWeight: FontWeight.w300,
-                                          ),
-                                          focusColor: Colors.yellow[400],
-                                        ),
-                                      )),
-                                )
-                            ),
-                            ButtonTheme(
-                              height: 50,
-                              minWidth: 250,
-                              child: FlatButton(
-                                color: Colors.blue[500],
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  "LOGIN",
-                                  style: TextStyle(
-                                    fontFamily: "SourceSansPro",
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  signIn();
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 50,
-                      margin: EdgeInsets.only(bottom: 0, top: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
+      body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.white,
+          child: Stack(
+            children: <Widget>[
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 250,
+                  height: 400,
+                  child: Form(
+                    key: _loginFormKey,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                            alignment: Alignment.centerLeft,
+                            //color: Colors.yellow[300],
+                            margin: EdgeInsets.only(bottom: 40),
+                            width: 300,
+                            height: 120,
                             child: Text(
-                              "Don't have an account? ",
+                              "Sign In",
                               style: TextStyle(
                                 fontFamily: "SourceSansPro",
-                                fontWeight: FontWeight.w400,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 48,
+                              ),
+                            )),
+                        Material(
+                          color: Colors.transparent,
+                          child: Container(
+                            child: TextFormField(
+                              textAlign: TextAlign.left,
+                              cursorColor: Colors.yellow[400],
+                              controller: emailInputController,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: emailValidator,
+                              style: TextStyle(
+                                fontFamily: "SourceSansPro",
+                                fontWeight: FontWeight.w300,
+                              ),
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.grey[200],
+                                contentPadding: EdgeInsets.only(
+                                    left: 20, top: 20, bottom: 20),
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide()),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[200],
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.grey[200],
+                                    ),
+                                    borderRadius: BorderRadius.circular(8)),
+                                hintText: 'E-mail',
+                                hintStyle: TextStyle(
+                                  fontFamily: "SourceSansPro",
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Material(
+                          color: Colors.transparent,
+                          child: Container(
+                              margin: EdgeInsets.only(top: 16, bottom: 16),
+                              child: TextFormField(
+                                cursorColor: Colors.yellow[400],
+                                controller: pwdInputController,
+                                obscureText: true,
+                                validator: pwdValidator,
+                                style: TextStyle(
+                                  fontFamily: "SourceSansPro",
+                                  fontWeight: FontWeight.w300,
+                                ),
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.grey[200],
+                                  contentPadding: EdgeInsets.only(
+                                      left: 20, top: 20, bottom: 20),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide()),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.grey[200],
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.grey[200],
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  hintText: 'Password',
+                                  hintStyle: TextStyle(
+                                    fontFamily: "SourceSansPro",
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                  focusColor: Colors.yellow[400],
+                                ),
+                              )),
+                        ),
+                        ButtonTheme(
+                          height: 50,
+                          minWidth: 250,
+                          child: FlatButton(
+                            color: Colors.blue[500],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              "LOGIN",
+                              style: TextStyle(
+                                fontFamily: "SourceSansPro",
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            onPressed: () {
+                              signIn();
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 50,
+                  margin: EdgeInsets.only(bottom: 0, top: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        child: Text(
+                          "Don't have an account? ",
+                          style: TextStyle(
+                            fontFamily: "SourceSansPro",
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      ButtonTheme(
+                          padding: EdgeInsets.zero,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          minWidth: 0,
+                          height: 0,
+                          child: FlatButton(
+                            child: Text(
+                              "Sign up",
+                              style: TextStyle(
+                                color: Colors.blue[500],
+                                fontFamily: "SourceSansPro",
+                                fontWeight: FontWeight.w700,
                                 fontSize: 16,
                               ),
                             ),
-                          ),
-                          ButtonTheme(
-                              padding: EdgeInsets.zero,
-                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              minWidth: 0,
-                              height: 0,
-                              child: FlatButton(
-                                child: Text(
-                                  "Sign up",
-                                  style: TextStyle(
-                                    color: Colors.blue[500],
-                                    fontFamily: "SourceSansPro",
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Navigator.pushNamed(context, "/signup");
-                                },
-                              )
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
+                            onPressed: () {
+                              Navigator.pushNamed(context, "/signup");
+                            },
+                          )),
+                    ],
+                  ),
+                ),
               )
-          ),
-        )
-      );
+            ],
+          )),
+    ));
   }
 
   void signIn() async {
@@ -267,8 +252,7 @@ class _LoginPageState extends State<LoginPage> {
     } finally {
       if (user != null) {
         final route = SharedAxisPageRoute(
-            page: Home(),
-            transitionType: SharedAxisTransitionType.scaled);
+            page: Home(), transitionType: SharedAxisTransitionType.scaled);
         Navigator.of(context).pushReplacement(route);
       } else {
         print("sign in failed!");
