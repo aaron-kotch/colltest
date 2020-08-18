@@ -117,7 +117,7 @@ class _NewTaskState extends State<NewTask> {
             ))));
   }
 
-  Widget slideIt(BuildContext context, int index, animation) {
+  Widget sectionCard(BuildContext context, int index, animation) {
 
     return SizeTransition(
       sizeFactor: CurvedAnimation(
@@ -266,7 +266,7 @@ class _NewTaskState extends State<NewTask> {
 
                     pos = index;
 
-                    return slideIt(context, index, animation);
+                    return sectionCard(context, index, animation);
                   }),
               Container(
                   alignment: Alignment.topCenter,
