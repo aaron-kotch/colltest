@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:colltest/home_view.dart';
 import 'package:flutter/material.dart';
-import 'package:colltest/home_view.dart';
 
 class NewTask extends StatefulWidget {
   @override
@@ -10,11 +8,19 @@ class NewTask extends StatefulWidget {
 }
 
 class _NewTaskState extends State<NewTask> {
+
+  //---Text Controllers -----------------------------------------------------
   TextEditingController titleInputController;
   TextEditingController tasksInputController = new TextEditingController();
-  String saved = '';
 
   List<TextEditingController> _controller = new List();
+  List<TextEditingController> _childController = new List();
+
+  List<TextEditingController> _childTextController = new List();
+
+  var testList = new List();
+  //-------------------------------------------------------------------------
+
   ScrollController scrollController = new ScrollController();
 
   List<String> lItems = [];
@@ -24,7 +30,11 @@ class _NewTaskState extends State<NewTask> {
   List<Widget> list = new List();
   List<String> savedText = new List();
 
+  String saved = '';
+
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+
+  List keyList = [GlobalKey<AnimatedListState>()];
 
   bool clicked = false;
 
@@ -32,48 +42,51 @@ class _NewTaskState extends State<NewTask> {
 
   int counter = 0;
 
+  int pos;
+
+  int index1 = -1;
+  int keyIndex = -1;
+
   double cardHeight = 250;
 
-  Widget slideIt(BuildContext context, int index, animation) {
+  Widget childCard(BuildContext context, int index, animation) {
     return SizeTransition(
-      sizeFactor: CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeInOutCubic,
-      ),
-      child: Container(
-          padding: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
-          child: Container(
-              child: Material(
+        sizeFactor:
+            CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic),
+        child: Container(
+            padding: EdgeInsets.only(left: 24, right: 8, top: 8, bottom: 4),
+            child: Container(
+                child: Material(
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  elevation: 1,
+                  borderRadius: BorderRadius.circular(8)),
+                  elevation: 0,
                   child: Column(
                     children: <Widget>[
                       new TextField(
+                        controller: testList[index1][index],
                         autofocus: false,
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        controller: _controller[index],
                         style: TextStyle(
                           fontFamily: "SourceSansPro",
                           fontWeight: FontWeight.w800,
                           color: Colors.grey[800],
-                          fontSize: 20,
+                          fontSize: 15,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'Section name',
+                          hintText: 'child',
                           hintStyle: TextStyle(
                             fontFamily: "SourceSansPro",
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w400,
                             color: Colors.grey[500],
-                            fontSize: 20,
+                            fontSize: 15,
                           ),
                           filled: true,
                           fillColor: Colors.grey[100],
                           border: OutlineInputBorder(
                               borderSide: BorderSide(
-                            color: Colors.grey[100],
-                          )),
+                                color: Colors.grey[100],
+                              )),
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(0),
@@ -99,18 +112,106 @@ class _NewTaskState extends State<NewTask> {
                               left: 16, right: 16, top: 12, bottom: 16),
                         ),
                       ),
+                    ],
+                  ),
+            ))));
+  }
+
+  Widget slideIt(BuildContext context, int index, animation) {
+
+    return SizeTransition(
+      sizeFactor: CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeInOutCubic,
+      ),
+      child: Container(
+          padding: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+          child: Container(
+              child: Material(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  elevation: 1,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: new TextField(
+                          autofocus: false,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          controller: _controller[index],
+                          style: TextStyle(
+                            fontFamily: "SourceSansPro",
+                            fontWeight: FontWeight.w800,
+                            color: Colors.grey[800],
+                            fontSize: 20,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Section ' +
+                                '${_controller.indexOf(_controller[index]) + 1}',
+                            hintStyle: TextStyle(
+                              fontFamily: "SourceSansPro",
+                              fontWeight: FontWeight.w800,
+                              color: Colors.grey[500],
+                              fontSize: 20,
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.grey[100],
+                                )),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(0),
+                                  bottomRight: Radius.circular(0),
+                                  topLeft: Radius.circular(8),
+                                  topRight: Radius.circular(8),
+                                ),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[100],
+                                )),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.blueAccent,
+                              ),
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(0),
+                                bottomRight: Radius.circular(0),
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                            ),
+                            contentPadding: EdgeInsets.only(
+                                left: 16, right: 16, top: 12, bottom: 16),
+                          ),
+                        ),
+                      ),
+                      AnimatedList(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          key: keyList[keyIndex],
+                          initialItemCount: _childController.length,
+                          itemBuilder:
+                              (BuildContext context, int index, animation) {
+
+                            return childCard(context, index, animation);
+                          }),
                       Align(
-                          alignment: Alignment.centerRight,
+                          alignment: Alignment.centerLeft,
                           child: Padding(
                             padding:
-                                EdgeInsets.only(right: 8, top: 4, bottom: 4),
+                                EdgeInsets.only(left: 24, top: 4, bottom: 4),
                             child: ButtonTheme(
+                              minWidth: 10,
+                              height: 30,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: FlatButton.icon(
                                 icon: Icon(Icons.add,
-                                    color: Colors.white, size: 20),
+                                    color: Colors.white, size: 12),
                                 disabledColor: Colors.blueAccent,
                                 color: Colors.blueAccent,
                                 splashColor: Colors.deepOrange[100],
@@ -118,12 +219,16 @@ class _NewTaskState extends State<NewTask> {
                                     style: TextStyle(
                                         fontFamily: "SourceSansPro",
                                         fontWeight: FontWeight.w800,
-                                        fontSize: 14,
+                                        fontSize: 12,
                                         color: Colors.white,
                                         letterSpacing: 1.25)),
                                 onPressed: () {
-                                  print(_controller[index].text);
-                                  print(_controller[index]);
+
+                                  testList[index1].add(new TextEditingController());
+
+                                  keyList[keyIndex].currentState.insertItem(0,
+                                      duration: const Duration(milliseconds: 500));
+                                  setState(() {});
                                 },
                               ),
                             ),
@@ -158,13 +263,15 @@ class _NewTaskState extends State<NewTask> {
                   key: listKey,
                   initialItemCount: _controller.length,
                   itemBuilder: (BuildContext context, int index, animation) {
+
+                    pos = index;
+
                     return slideIt(context, index, animation);
                   }),
               Container(
-                alignment: Alignment.topCenter,
-                  height: MediaQuery.of(context).size.width / 4,
+                  alignment: Alignment.topCenter,
                   padding: EdgeInsets.only(top: 8, bottom: 8),
-                  child: Stack(
+                  child: Column(
                     children: <Widget>[
                       ButtonTheme(
                         shape: RoundedRectangleBorder(
@@ -181,6 +288,14 @@ class _NewTaskState extends State<NewTask> {
                                   color: Colors.white,
                                   letterSpacing: 1.25)),
                           onPressed: () {
+                            keyIndex++;
+
+                            keyList.add(new GlobalKey<AnimatedListState>());
+
+                            testList.add(_childTextController);
+
+                            index1++;
+
                             if (_controller.length == 0) {
                               _controller.add(new TextEditingController());
                               listKey.currentState.insertItem(0,
@@ -195,6 +310,50 @@ class _NewTaskState extends State<NewTask> {
                             setState(() {});
 
                             maxScroll();
+                          },
+                        ),
+                      ),
+                      ButtonTheme(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: FlatButton.icon(
+                          color: Colors.pink[500],
+                          splashColor: Colors.deepPurple[100],
+                          icon: Icon(Icons.add, color: Colors.white),
+                          label: Text("Add into inner list",
+                              style: TextStyle(
+                                  fontFamily: "SourceSansPro",
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: 1.25)),
+                          onPressed: () {
+
+                            _childTextController.add(new TextEditingController());
+
+                             testList.add(_childTextController);
+                          },
+                        ),
+                      ),
+                      ButtonTheme(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: FlatButton.icon(
+                          color: Colors.pink[500],
+                          splashColor: Colors.deepPurple[100],
+                          icon: Icon(Icons.add, color: Colors.white),
+                          label: Text("Print list",
+                              style: TextStyle(
+                                  fontFamily: "SourceSansPro",
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: 1.25)),
+                          onPressed: () {
+                            print(testList);
+                            print(_childTextController.length);
+                            print(testList.sublist(1));
+                            print(testList[0]);
                           },
                         ),
                       )
@@ -219,24 +378,12 @@ class _NewTaskState extends State<NewTask> {
 
             String len = _controller.length.toString();
 
-            print(_items);
-            print(savedText);
-            print("controller length = " + len);
-            print(list.length);
-            print(scrollController.position);
+            print(_controller[pos].text);
           },
           child: new Icon(Icons.add),
         ),
       ),
     );
-  }
-
-  void printList() {
-    var testList = [saved, "bruh"];
-
-    testList.add("nice");
-
-    print(testList);
   }
 
   maxScroll() async {
