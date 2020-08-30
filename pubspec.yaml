@@ -46,6 +46,7 @@ dependencies:
   flutter_statusbarcolor: ^0.2.3
   carousel_slider: ^2.2.1
   page_transition: ^1.1.6
+  intl: ^0.16.1
 
 dev_dependencies:
   flutter_test:
