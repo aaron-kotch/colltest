@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:math';
+import 'package:colltest/home_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -132,16 +134,17 @@ class _NewTaskState extends State<NewTask> {
         curve: Curves.easeInOutCubic,
       ),
       child: Container(
-          padding: EdgeInsets.only(left: 12, right: 12, top: 4, bottom: 4),
+          padding: EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 4),
           child: Container(
               child: Material(
+                color: Colors.lime[200],
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),
-                  elevation: 1,
+                  elevation: 0,
                   child: Column(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.only(bottom: 4, left: 20, top: 4),
+                        padding: EdgeInsets.only(bottom: 4, left: 20, top: 8),
                         child: editableSectionTitle(index),
                       ),
                       Container(
@@ -174,7 +177,7 @@ class _NewTaskState extends State<NewTask> {
                             enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(4),
                                 borderSide: BorderSide(
-                                  color: Colors.grey[500],
+                                  color: Colors.grey[800],
                                 )),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(4),
@@ -188,11 +191,14 @@ class _NewTaskState extends State<NewTask> {
                       ),
                       Container(
                         padding: EdgeInsets.only(
-                            left: 16, top: 16, right: 16, bottom: 16),
+                            left: 0, top: 16, right: 0, bottom: 0),
                         child: Material(
-                          color: Colors.deepOrange[100],
+                          color: Colors.lime[200],
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4)),
+                              borderRadius: BorderRadius.only(
+                                bottomRight: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                              )),
                           elevation: 0,
                           child: Column(
                             children: <Widget>[
@@ -219,8 +225,8 @@ class _NewTaskState extends State<NewTask> {
                                   color: Colors.white,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(4),
-                                    topLeft: Radius.circular(4),
+                                    topRight: Radius.circular(10),
+                                    topLeft: Radius.circular(10),
                                   )),
                                   elevation: 1,
                                   child: Column(
@@ -358,8 +364,8 @@ class _NewTaskState extends State<NewTask> {
                                   color: Colors.white,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(4),
-                                    bottomLeft: Radius.circular(4),
+                                    bottomRight: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10),
                                   )),
                                   elevation: 1,
                                   child: Column(
@@ -489,6 +495,7 @@ class _NewTaskState extends State<NewTask> {
       },
       child: SafeArea(
         child: new Scaffold(
+          backgroundColor: Colors.grey[200],
           body: SingleChildScrollView(
             controller: scrollController,
             scrollDirection: Axis.vertical,
@@ -496,8 +503,8 @@ class _NewTaskState extends State<NewTask> {
               children: <Widget>[
                 Container(
                   alignment: Alignment.center,
-                  height: scrHeight / 9,
-                  padding: EdgeInsets.only(left: 12, right: 12),
+                  height: scrHeight / 10,
+                  padding: EdgeInsets.only(left: 20, right: 24, top: 8, bottom: 8),
                   child: TextField(
                     autofocus: false,
                     maxLines: null,
@@ -540,7 +547,7 @@ class _NewTaskState extends State<NewTask> {
                         ),
                       ),
                       contentPadding: EdgeInsets.only(
-                          left: 16, right: 16, top: 20, bottom: 20),
+                          left: 16, right: 16, top: 12, bottom: 12),
                     ),
                   ),
                 ),
@@ -548,39 +555,16 @@ class _NewTaskState extends State<NewTask> {
                     alignment: Alignment.center,
                     width: scrWidth,
                     padding:
-                    EdgeInsets.only(left: 12, right: 12, bottom: 8, top: 4),
-                    child: Material(
-                      color: Colors.deepOrange[100],
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      elevation: 1,
+                    EdgeInsets.only(left: 24, right: 24, bottom: 16, top: 0),
                       child: Column(
                         children: <Widget>[
                           Container(
-                            padding:
-                            EdgeInsets.only(top: 16, left: 16, bottom: 16),
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "Project Planner",
-                              style: TextStyle(
-                                fontFamily: "SourceSansPro",
-                                fontWeight: FontWeight.w900,
-                                fontSize: 20,
-                                letterSpacing: 0.15,
-                                color: Colors.grey[800],
-                              ),
-                            ),
-                          ),
-                          Container(
-                              height: scrHeight / 5,
                               width: scrWidth,
-                              padding: EdgeInsets.only(
-                                  top: 16, left: 16, right: 16, bottom: 4),
                               child: Column(
                                 children: <Widget>[
                                   Material(
                                     color: Colors.white,
-                                    elevation: 2,
+                                    elevation: 0,
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(8),
@@ -665,7 +649,7 @@ class _NewTaskState extends State<NewTask> {
                                   ),
                                   Material(
                                       color: Colors.white,
-                                      elevation: 2,
+                                      elevation: 0,
                                       shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(0),
@@ -741,46 +725,9 @@ class _NewTaskState extends State<NewTask> {
                                       )),
                                 ],
                               )),
-                          Container(
-                              padding: EdgeInsets.only(
-                                  left: 24, right: 16, bottom: 16),
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      "Members",
-                                      style: TextStyle(
-                                        fontFamily: "SourceSansPro",
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 17,
-                                        letterSpacing: 0.15,
-                                        color: Colors.grey[800],
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                      alignment: Alignment.centerLeft,
-                                      child: FlatButton.icon(
-                                        icon: Icon(Icons.group_add,
-                                            color: Colors.blueGrey[900],
-                                            size: 20),
-                                        label: Text(
-                                          "ADD MEMBERS",
-                                          style: TextStyle(
-                                            fontFamily: "SourceSansPro",
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14,
-                                            letterSpacing: 1.25,
-                                            color: Colors.blueGrey[900],
-                                          ),
-                                        ),
-                                      ))
-                                ],
-                              )),
                         ],
                       ),
-                    )),
+                    ),
                 AnimatedList(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -1007,6 +954,15 @@ class _NewTaskState extends State<NewTask> {
     var firebaseUser = await FirebaseAuth.instance.currentUser();
 
     List<String> projectTasksList = new List();
+
+    firestoreInstance
+        .collection("userProjects")
+        .document(firebaseUser.uid)
+        .collection("${titleInputController.text}")
+        .add({
+      "Due Date" : "$selectedDate",
+      "Time" : "$selectedTime",
+    });
 
     for (i = 0; i < _controller.length; i++) {
       projectTasksList.add(_controller[i].text);
