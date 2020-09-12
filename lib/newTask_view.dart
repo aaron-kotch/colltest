@@ -45,6 +45,7 @@ class _NewTaskState extends State<NewTask> {
 
   var selectedTime = " -";
   var selectedDate = " -";
+  var projectDueDate;
 
   List taskStartDate = new List();
   List taskEndDate = new List();
@@ -65,12 +66,6 @@ class _NewTaskState extends State<NewTask> {
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    sectionTitleController.dispose();
-    super.dispose();
   }
 
   Widget editableSectionTitle(index) {
@@ -569,8 +564,8 @@ class _NewTaskState extends State<NewTask> {
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(8),
                                           topRight: Radius.circular(8),
-                                          bottomRight: Radius.circular(0),
-                                          bottomLeft: Radius.circular(0),
+                                          bottomRight: Radius.circular(8),
+                                          bottomLeft: Radius.circular(8),
                                         )),
                                     child: Stack(
                                       children: <Widget>[
@@ -622,6 +617,42 @@ class _NewTaskState extends State<NewTask> {
                                                       ),
                                                     ],
                                                   )),
+                                              Container(
+                                                padding: EdgeInsets.only(
+                                                    left: 20,
+                                                    top: 12,
+                                                    bottom: 12),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "Time",
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                        "SourceSansPro",
+                                                        fontWeight:
+                                                        FontWeight.w300,
+                                                        fontSize: 12,
+                                                        color: Colors.grey[800],
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "$selectedTime",
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                        "SourceSansPro",
+                                                        fontWeight:
+                                                        FontWeight.w700,
+                                                        fontSize: 15,
+                                                        color: Colors.grey[800],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -663,62 +694,8 @@ class _NewTaskState extends State<NewTask> {
                                             alignment: Alignment.centerLeft,
                                             child: Row(
                                               children: <Widget>[
-                                                Container(
-                                                  padding: EdgeInsets.only(
-                                                      left: 20,
-                                                      top: 12,
-                                                      bottom: 12),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                    crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                    children: <Widget>[
-                                                      Text(
-                                                        "Time",
-                                                        style: TextStyle(
-                                                          fontFamily:
-                                                          "SourceSansPro",
-                                                          fontWeight:
-                                                          FontWeight.w300,
-                                                          fontSize: 12,
-                                                          color: Colors.grey[800],
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        "$selectedTime",
-                                                        style: TextStyle(
-                                                          fontFamily:
-                                                          "SourceSansPro",
-                                                          fontWeight:
-                                                          FontWeight.w700,
-                                                          fontSize: 15,
-                                                          color: Colors.grey[800],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
+
                                               ],
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment: Alignment.centerRight,
-                                            child: Container(
-                                              padding: EdgeInsets.only(
-                                                  top: 8, bottom: 8, right: 4),
-                                              child: IconButton(
-                                                splashRadius: 28,
-                                                highlightColor: Colors.yellow,
-                                                icon: Icon(
-                                                  Icons.access_time,
-                                                  color: Colors.grey[800],
-                                                  size: 20,
-                                                ),
-                                                onPressed: () {
-                                                  pickProjectTime(context);
-                                                },
-                                              ),
                                             ),
                                           ),
                                         ],
@@ -794,7 +771,7 @@ class _NewTaskState extends State<NewTask> {
                             color: Colors.white,
                             splashColor: Colors.deepPurple[100],
                             icon: Icon(Icons.add_circle_outline, color: Colors.cyan),
-                            label: Text("Print list",
+                            label: Text("DONE",
                                 style: TextStyle(
                                     fontFamily: "SourceSansPro",
                                     fontWeight: FontWeight.w800,
@@ -802,6 +779,7 @@ class _NewTaskState extends State<NewTask> {
                                     letterSpacing: 1.25)),
                             onPressed: () {
                               updateProjectData();
+                              //Navigator.pop(context);
 
                               //print(testList.sublist(1));
                             },
@@ -836,26 +814,31 @@ class _NewTaskState extends State<NewTask> {
   }
 
   pickProjectDate(BuildContext context) async {
+
+    var pickedDate;
+    var pickedTime;
+
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(2020),
         lastDate: DateTime(2025));
     if (picked != null && picked != DateTime.now()) {
-      var pickedDate = picked;
+      pickedDate = picked;
       selectedDate = DateFormat('yMMMEd').format(pickedDate);
     }
-    setState(() {});
-  }
 
-  pickProjectTime(BuildContext context) async {
-    final TimeOfDay picked =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final TimeOfDay timePicked =
+    await showTimePicker(context: context, initialTime: TimeOfDay.now());
 
-    if (picked != null && picked != TimeOfDay.now()) {
-      var pickedTime = picked;
+    if (picked != null && timePicked != TimeOfDay.now()) {
+      pickedTime = timePicked;
       selectedTime = pickedTime.format(context);
     }
+
+
+    projectDueDate = (DateTime(pickedDate.year, pickedDate.month, pickedDate.day, pickedTime.hour, pickedTime.minute));
+
     setState(() {});
   }
 
@@ -951,25 +934,40 @@ class _NewTaskState extends State<NewTask> {
   }
 
   void updateProjectData() async {
-    var firebaseUser = await FirebaseAuth.instance.currentUser();
+    var firebaseUser = await FirebaseAuth.instance.currentUser;
 
     List<String> projectTasksList = new List();
 
     firestoreInstance
         .collection("userProjects")
-        .document(firebaseUser.uid)
-        .collection("${titleInputController.text}")
-        .add({
-      "Due Date" : "$selectedDate",
-      "Time" : "$selectedTime",
+        .doc(firebaseUser.uid)
+        .update({
+      "Projects" : FieldValue.arrayUnion(["${titleInputController.text}"]),
+    });
+
+    final addDueDate = await firestoreInstance
+       .collection("userProjects")
+       .doc(firebaseUser.uid)
+       .collection("${titleInputController.text}")
+       .add({
+     "Due Date" : "$projectDueDate",
+    });
+
+    var docID = addDueDate.id;
+
+    firestoreInstance
+        .collection("userProjects")
+        .doc(firebaseUser.uid)
+        .update({
+      "docID" : FieldValue.arrayUnion(["$docID"]),
     });
 
     for (i = 0; i < _controller.length; i++) {
       projectTasksList.add(_controller[i].text);
       firestoreInstance
           .collection("userProjects")
-          .document(firebaseUser.uid).collection("${titleInputController.text}")
-          .document()
+          .doc(firebaseUser.uid).collection("${titleInputController.text}")
+          .doc()
           .collection("${_controller[i].text}")
           .add({
         "Description" : "${_childTextController[i].text}",

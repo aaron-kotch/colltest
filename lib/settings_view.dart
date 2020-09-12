@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:colltest/main.dart';
 import 'dart:io';
 
-class Settings extends StatefulWidget {
+class SettingsView extends StatefulWidget {
   @override
-  _SettingsState createState() => _SettingsState();
+  _SettingsViewState createState() => _SettingsViewState();
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsViewState extends State<SettingsView> {
   String appDocPath;
   String imagePath;
   File newImage;
@@ -23,7 +23,6 @@ class _SettingsState extends State<Settings> {
           MyAppBar(),
         ]),
       ),
-      drawer: AppDrawer("settings"),
     );
   }
 

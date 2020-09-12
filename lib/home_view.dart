@@ -2,11 +2,11 @@ import 'dart:io';
 import 'dart:math';
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:colltest/customScrollPhysics.dart';
 import 'package:colltest/font_awesome_icons.dart';
 import 'package:colltest/login_view.dart';
 import 'package:colltest/newTask_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:colltest/main.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'size_config.dart';
@@ -28,7 +29,7 @@ String _imagePath;
 File newImage;
 double scrWidth;
 
-List<String> projectTitleList = new List();
+//todo - docID reference in newTask & related codes
 
 class Home extends StatefulWidget {
   @override
@@ -40,6 +41,11 @@ class _HomeState extends State<Home> {
   final pageViewController = PageController(viewportFraction: 0.87);
 
   final cardController = ScrollController();
+
+  List<String> projectTitleList = new List();
+  List<String> taskTimeList = new List();
+  List<String> docID = new List();
+  List<String> projectTimeList = new List();
 
   ScrollPhysics scrollPhysics;
 
@@ -56,17 +62,20 @@ class _HomeState extends State<Home> {
   }
   //---------Firestore-----------------------------------------
 
-  final firestoreInstance = Firestore.instance;
+  final firestoreInstance = FirebaseFirestore.instance;
 
   //----------------------------------------------------------
 
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+
     loadImage();
     retrieveProjects();
+    checkSub();
+    getTime();
 
+    super.initState();
   }
 
   @override
@@ -80,7 +89,7 @@ class _HomeState extends State<Home> {
     final screenWidth = MediaQuery.of(context).size.width;
     scrWidth = screenWidth;
 
-
+    int estimateTs = DateTime(2020, 9, 12, 6, 0, 0).millisecondsSinceEpoch; // set needed date
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
@@ -88,7 +97,7 @@ class _HomeState extends State<Home> {
         statusBarIconBrightness: Brightness.dark,
       ),
       child: FutureBuilder(
-        future: userName(),
+        future: getData(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return AnimatedSwitcher(
@@ -105,10 +114,10 @@ class _HomeState extends State<Home> {
                           [
                             Container(
                                 child: Container(
-                                    alignment: Alignment.topRight,
-                                    padding:
-                                        EdgeInsets.only(top: 20, right: 20),
-                                    child: IconButton(
+                                  alignment: Alignment.topRight,
+                                  padding:
+                                  EdgeInsets.only(top: 20, right: 20),
+                                  child: IconButton(
                                       icon: Icon(
                                         FontAwesome.arrow_right,
                                         color: Colors.grey[800],
@@ -116,9 +125,11 @@ class _HomeState extends State<Home> {
                                       ),
                                       onPressed: () {
                                         print(Width);
-                                        print(projectTitleList);
+                                        print(projectTitleList.length);
+                                        print(docID);
+                                        print(projectTimeList);
                                       }
-                                    ),
+                                  ),
                                 )
                             ),
                             Container(
@@ -126,58 +137,58 @@ class _HomeState extends State<Home> {
                               padding: EdgeInsets.only(left: 56, top: 16),
                               child: _imagePath != null
                                   ? Container(
-                                      width: 80,
-                                      height: 80,
-                                      child: ClipOval(
-                                          child: Material(
-                                              color: Colors.yellow[300],
-                                              child: InkWell(
-                                                  splashColor: Colors.blue[300],
-                                                  onTap: () {
-                                                    print(MediaQuery.of(context)
-                                                        .size
-                                                        .width);
-                                                  },
-                                                  child: Container(
-                                                      padding:
-                                                          EdgeInsets.all(2),
-                                                      child: CircleAvatar(
-                                                        backgroundImage:
-                                                            FileImage(File(
-                                                                _imagePath)),
-                                                        radius: 100,
-                                                      ))))),
-                                    )
+                                width: 80,
+                                height: 80,
+                                child: ClipOval(
+                                    child: Material(
+                                        color: Colors.yellow[300],
+                                        child: InkWell(
+                                            splashColor: Colors.blue[300],
+                                            onTap: () {
+                                              print(MediaQuery.of(context)
+                                                  .size
+                                                  .width);
+                                            },
+                                            child: Container(
+                                                padding:
+                                                EdgeInsets.all(2),
+                                                child: CircleAvatar(
+                                                  backgroundImage:
+                                                  FileImage(File(
+                                                      _imagePath)),
+                                                  radius: 100,
+                                                ))))),
+                              )
                                   : Container(
-                                      width: 80,
-                                      height: 80,
-                                      child: Container(
-                                        child: ClipOval(
-                                            child: Material(
-                                                color: Colors.white,
-                                                child: InkWell(
-                                                    splashColor:
-                                                        Colors.blue[300],
-                                                    onTap: () {
-                                                      print(
-                                                          MediaQuery.of(context)
-                                                              .size
-                                                              .width);
-                                                    },
-                                                    child: Container(
-                                                        padding:
-                                                            EdgeInsets.all(2),
-                                                        child: CircleAvatar(
-                                                          backgroundImage: newImage !=
-                                                                  null
-                                                              ? FileImage(File(
-                                                                  prefs.getString(
-                                                                      'collImage')))
-                                                              : NetworkImage(
-                                                                  'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_account_circle_48px-512.png'),
-                                                          radius: 100,
-                                                        ))))),
-                                      )),
+                                  width: 80,
+                                  height: 80,
+                                  child: Container(
+                                    child: ClipOval(
+                                        child: Material(
+                                            color: Colors.white,
+                                            child: InkWell(
+                                                splashColor:
+                                                Colors.blue[300],
+                                                onTap: () {
+                                                  print(
+                                                      MediaQuery.of(context)
+                                                          .size
+                                                          .width);
+                                                },
+                                                child: Container(
+                                                    padding:
+                                                    EdgeInsets.all(2),
+                                                    child: CircleAvatar(
+                                                      backgroundImage: newImage !=
+                                                          null
+                                                          ? FileImage(File(
+                                                          prefs.getString(
+                                                              'collImage')))
+                                                          : NetworkImage(
+                                                          'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_account_circle_48px-512.png'),
+                                                      radius: 100,
+                                                    ))))),
+                                  )),
                             ),
                             Container(
                                 padding: EdgeInsets.only(left: 56, top: 0),
@@ -185,7 +196,7 @@ class _HomeState extends State<Home> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      "@" + "${snapshot.data.data["username"]}",
+                                      "@" + "${snapshot.data.data()["username"]}",
                                       style: TextStyle(
                                         fontSize: Width * 6,
                                         fontFamily: "SourceSansPro",
@@ -220,37 +231,7 @@ class _HomeState extends State<Home> {
 
                                       Container(
                                         alignment: Alignment.topLeft,
-                                        height: 200,
                                         width: Width * 100,
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                            physics: NeverScrollableScrollPhysics(),
-                                            scrollDirection: Axis.vertical,
-                                            itemCount: projectTitleList.length,
-                                            itemBuilder: (context, index) {
-                                              return Container(
-                                                  padding: EdgeInsets.only(top: 20, left: 24),
-                                                  child: projectTitleList != null
-                                                      ? Text("${projectTitleList[index]}",
-                                                    style: TextStyle(
-                                                      fontSize: 22,
-                                                      fontFamily: "SourceSansPro",
-                                                      fontWeight: FontWeight.w500,
-                                                      color: Colors.grey[800],
-                                                      letterSpacing: 0.25,
-                                                    ),
-                                                  )
-                                                      : Text("${projectTitleList[index]}",
-                                                    style: TextStyle(
-                                                      fontSize: 22,
-                                                      fontFamily: "SourceSansPro",
-                                                      fontWeight: FontWeight.w500,
-                                                      color: Colors.grey[800],
-                                                      letterSpacing: 0.25,
-                                                    ),
-                                                  ));
-                                            }
-                                        ),
                                       )
                                     ],
                                   )),
@@ -259,103 +240,270 @@ class _HomeState extends State<Home> {
                               child: Column(
                                 children: <Widget>[
                                   Container(
-                                    height: Height * 5,
-                                    width: Width * 100,
+                                      height: Height * 5,
+                                      width: Width * 100,
                                       margin: EdgeInsets.only(
                                           top: 4, bottom: 8, left: 32, right: 20),
-                                    child: Stack(
-                                      children: <Widget>[
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            "Ongoing",
-                                            style: TextStyle(
-                                              fontSize: 22,
-                                              fontFamily: "SourceSansPro",
-                                              fontWeight: FontWeight.w800,
-                                              color: Colors.grey[800],
-                                              letterSpacing: 0.25,
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              "Ongoing",
+                                              style: TextStyle(
+                                                fontSize: 22,
+                                                fontFamily: "SourceSansPro",
+                                                fontWeight: FontWeight.w800,
+                                                color: Colors.grey[800],
+                                                letterSpacing: 0.25,
+                                              ),
+                                              textAlign: TextAlign.start,
                                             ),
-                                            textAlign: TextAlign.start,
+                                          ),
+                                          Align(
+                                              alignment: Alignment.centerRight,
+                                              child: FlatButton(
+                                                child: Text(
+                                                  "SEE ALL",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontFamily: "SourceSansPro",
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Colors.blueAccent,
+                                                    letterSpacing: 1.25,
+                                                  ),
+                                                  textAlign: TextAlign.end,
+                                                ),
+                                              )
+                                          ),
+                                        ],
+                                      )
+                                  ),
+                                  FutureBuilder(
+                                    future: retrieveDates(),
+                                    builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.done) {
+                                        return AnimatedSwitcher(
+                                            duration: Duration(seconds: 1),
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: Height * 30,
+                                                child: PageView.builder(
+                                                    scrollDirection: Axis.horizontal,
+                                                    controller: pageViewController,
+                                                    itemCount: projectTitleList.length,
+                                                    itemBuilder: (context, index) {
+                                                      return Card(
+                                                          margin: EdgeInsets.only(top: 0, bottom: 4, right: 4, left: 4),
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                          color: RandomColor().colorRandom(),
+                                                          elevation: 0,
+                                                          child: Column(
+                                                            children: <Widget>[
+                                                              Align(
+                                                                alignment: FractionalOffset.bottomCenter,
+                                                                child: Container(
+                                                                  width: Width * 100,
+                                                                  padding: EdgeInsets.only(top: 20, bottom: 20, left: 24),
+                                                                  alignment: Alignment.bottomLeft,
+                                                                  child: projectTitleList[index] != null
+                                                                      ? Text(
+                                                                    "${projectTitleList[index]}",
+                                                                    style: TextStyle(
+                                                                      fontSize: Width * 6,
+                                                                      fontFamily: "SourceSansPro",
+                                                                      fontWeight: FontWeight.w800,
+                                                                      color: Colors.white,
+                                                                      letterSpacing: 0.25,
+                                                                    ),
+                                                                    textAlign: TextAlign.left,
+                                                                  )
+                                                                      : Text(
+                                                                    "Null",
+                                                                    style: TextStyle(
+                                                                      fontSize: 16,
+                                                                      fontFamily: "SourceSansPro",
+                                                                      fontWeight: FontWeight.w800,
+                                                                      color: Colors.grey[800],
+                                                                      letterSpacing: 0.25,
+                                                                    ),
+                                                                    textAlign: TextAlign.left,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Container(
+                                                                alignment: Alignment.topLeft,
+                                                                padding: EdgeInsets.only(top: 0, bottom: 16, left: 24),
+                                                                child: Column(
+                                                                  mainAxisSize: MainAxisSize.max,
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: <Widget>[
+                                                                    Text(
+                                                                      "REMAINING TIME",
+                                                                      style: TextStyle(
+                                                                        fontSize: 11,
+                                                                        fontFamily: "SourceSansPro",
+                                                                        fontWeight: FontWeight.w300,
+                                                                        color: Colors.white,
+                                                                        letterSpacing: 1.5,
+                                                                      ),
+                                                                      textAlign: TextAlign.left,
+                                                                    ),
+                                                                    FutureBuilder(
+                                                                      future: retrieveDates(),
+                                                                      builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                                                        if (snapshot.connectionState == ConnectionState.done) {
+                                                                          return StreamBuilder(
+                                                                              stream: Stream.periodic(Duration(seconds: 1), (i) => i).asBroadcastStream(),
+                                                                              builder: (BuildContext context, snapshot) {
+                                                                                DateTime tt = DateTime.parse("${projectTimeList[index]}");
+                                                                                var diff = DateTime(tt.year, tt.month, tt.day, tt.hour, tt.minute, tt.second).difference(DateTime.now());
+                                                                                var diffDays =  diff.inDays;
+                                                                                var diffHours =  diff.inHours % 24;
+                                                                                var diffMinutes =  diff.inMinutes % 60;
+                                                                                var diffSeconds =  diff.inSeconds % 60;
+
+                                                                                return Row(
+                                                                                  children: <Widget>[
+                                                                                    Text(
+                                                                                        "$diffDays",
+                                                                                        style: TextStyle(
+                                                                                          fontSize: Width * 6,
+                                                                                          fontFamily: "SourceSansPro",
+                                                                                          fontWeight: FontWeight.w900,
+                                                                                          color: Colors.white,
+                                                                                          letterSpacing: 0.5,
+                                                                                        ),
+                                                                                        textAlign: TextAlign.left),
+                                                                                    Text(
+                                                                                        "D",
+                                                                                        style: TextStyle(
+                                                                                          fontSize: Width * 6,
+                                                                                          fontFamily: "SourceSansPro",
+                                                                                          fontWeight: FontWeight.w300,
+                                                                                          color: Colors.white,
+                                                                                          letterSpacing: 0,
+                                                                                        ),
+                                                                                        textAlign: TextAlign.left),
+                                                                                    Padding(
+                                                                                      padding: EdgeInsets.only(left: 8),
+                                                                                      child: Text(
+                                                                                          "$diffHours",
+                                                                                          style: TextStyle(
+                                                                                            fontSize: Width * 6,
+                                                                                            fontFamily: "SourceSansPro",
+                                                                                            fontWeight: FontWeight.w900,
+                                                                                            color: Colors.white,
+                                                                                            letterSpacing: 0,
+                                                                                          ),
+                                                                                          textAlign: TextAlign.left),
+                                                                                    ),
+                                                                                    Text(
+                                                                                        "H",
+                                                                                        style: TextStyle(
+                                                                                          fontSize: Width * 6,
+                                                                                          fontFamily: "SourceSansPro",
+                                                                                          fontWeight: FontWeight.w300,
+                                                                                          color: Colors.white,
+                                                                                          letterSpacing: 0,
+                                                                                        ),
+                                                                                        textAlign: TextAlign.left),
+                                                                                    Padding(
+                                                                                      padding: EdgeInsets.only(left: 8),
+                                                                                      child: Text(
+                                                                                          "$diffMinutes",
+                                                                                          style: TextStyle(
+                                                                                            fontSize: Width * 6,
+                                                                                            fontFamily: "SourceSansPro",
+                                                                                            fontWeight: FontWeight.w900,
+                                                                                            color: Colors.white,
+                                                                                            letterSpacing: 0,
+                                                                                          ),
+                                                                                          textAlign: TextAlign.left),
+                                                                                    ),
+                                                                                    Text(
+                                                                                        "M",
+                                                                                        style: TextStyle(
+                                                                                          fontSize: Width * 6,
+                                                                                          fontFamily: "SourceSansPro",
+                                                                                          fontWeight: FontWeight.w300,
+                                                                                          color: Colors.white,
+                                                                                          letterSpacing: 0,
+                                                                                        ),
+                                                                                        textAlign: TextAlign.left),
+                                                                                    Padding(
+                                                                                      padding: EdgeInsets.only(left: 8),
+                                                                                      child: Text(
+                                                                                          "$diffSeconds",
+                                                                                          style: TextStyle(
+                                                                                            fontSize: Width * 6,
+                                                                                            fontFamily: "SourceSansPro",
+                                                                                            fontWeight: FontWeight.w900,
+                                                                                            color: Colors.white,
+                                                                                            letterSpacing: 0,
+                                                                                          ),
+                                                                                          textAlign: TextAlign.left),
+                                                                                    ),
+                                                                                    Text(
+                                                                                        "S",
+                                                                                        style: TextStyle(
+                                                                                          fontSize: Width * 6,
+                                                                                          fontFamily: "SourceSansPro",
+                                                                                          fontWeight: FontWeight.w300,
+                                                                                          color: Colors.white,
+                                                                                          letterSpacing: 0,
+                                                                                        ),
+                                                                                        textAlign: TextAlign.left),
+                                                                                  ],
+                                                                                );
+                                                                              });
+                                                                        }
+                                                                        else if (snapshot.connectionState == ConnectionState.none) {
+                                                                          return Text("No data");
+                                                                        }
+                                                                        return AnimatedSwitcher(
+                                                                          duration: Duration(milliseconds: 500),
+                                                                          child: Container(
+                                                                            alignment: Alignment.center,
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              Spacer(),
+
+                                                            ],
+                                                          ),
+                                                      );
+                                                    }
+                                                )),
+                                        );
+                                      }
+                                      else if (snapshot.connectionState == ConnectionState.none) {
+                                        return Text(
+                                            "No Data"
+                                        );
+                                      }
+                                      return AnimatedSwitcher(
+                                        duration: Duration(milliseconds: 500),
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: Height * 30,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              CircularProgressIndicator(
+                                                valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                                                //backgroundColor: Colors.blueGrey,
+                                              )
+                                            ],
                                           ),
                                         ),
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: FlatButton(
-                                            child: Text(
-                                              "SEE ALL",
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: "SourceSansPro",
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.blueAccent,
-                                                letterSpacing: 1.25,
-                                              ),
-                                              textAlign: TextAlign.end,
-                                            ),
-                                          )
-                                        ),
-                                      ],
-                                    )
+                                      );
+                                    },
                                   ),
-                                  Container(
-                                      alignment: Alignment.centerLeft,
-                                      height: Height * 30,
-                                      child: PageView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          controller: pageViewController,
-                                          itemCount: projectTitleList.length,
-                                          itemBuilder: (context, index) {
-                                            return Card(
-                                              margin: EdgeInsets.only(top: 0, bottom: 4, right: 4, left: 4),
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                              color: RandomColor().colorRandom(),
-                                              elevation: 0,
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                children: <Widget>[
-                                                  Material(
-                                                    color: Colors.white,
-                                                    shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.only(
-                                                          bottomLeft: Radius.circular(10),
-                                                          bottomRight: Radius.circular(10),
-                                                        )),
-                                                    child: Container(
-                                                      width: Width * 100,
-                                                      padding: EdgeInsets.only(top: 20, bottom: 20, left: 24),
-                                                      alignment: Alignment.bottomLeft,
-                                                      child: projectTitleList[index] != null
-                                                          ? Text(
-                                                        "${projectTitleList[index]}",
-                                                        style: TextStyle(
-                                                          fontSize: 22,
-                                                          fontFamily: "SourceSansPro",
-                                                          fontWeight: FontWeight.w600,
-                                                          color: Colors.grey[800],
-                                                          letterSpacing: 0.25,
-                                                        ),
-                                                        textAlign: TextAlign.left,
-                                                      )
-                                                          : Text(
-                                                        "Null",
-                                                        style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontFamily: "SourceSansPro",
-                                                          fontWeight: FontWeight.w800,
-                                                          color: Colors.grey[800],
-                                                          letterSpacing: 0.25,
-                                                        ),
-                                                        textAlign: TextAlign.left,
-                                                      ),
-                                                    ),
-                                                  )
-
-                                                ],
-                                              ),
-                                            );
-                                          }
-                                      )),
                                 ],
                               ),
                             ),
@@ -380,8 +528,8 @@ class _HomeState extends State<Home> {
                                       final route = SharedAxisPageRoute(
                                           page: LoginPage(),
                                           transitionType:
-                                              SharedAxisTransitionType
-                                                  .horizontal);
+                                          SharedAxisTransitionType
+                                              .horizontal);
                                       Navigator.of(context)
                                           .pushReplacement(route);
                                     },
@@ -419,22 +567,21 @@ class _HomeState extends State<Home> {
                   transitionDuration: Duration(milliseconds: 500),
                   closedBuilder: (BuildContext c, VoidCallback action) =>
                       Container(
-                    width: 56,
-                    height: 56,
-                    child: FlatButton(
-                      color: Colors.deepOrange[100],
-                      child: Icon(
-                        Icons.edit,
-                        color: Colors.grey[800],
+                        width: 56,
+                        height: 56,
+                        child: FlatButton(
+                          color: Colors.deepOrange[100],
+                          child: Icon(
+                            Icons.edit,
+                            color: Colors.grey[800],
+                          ),
+                          onPressed: () => action(),
+                        ),
                       ),
-                      onPressed: () => action(),
-                    ),
-                  ),
                   openBuilder: (BuildContext c, VoidCallback action) =>
                       NewTask(),
                   tappable: false,
                 ),
-                drawer: AppDrawer("Home"),
               ),
             );
           } else if (snapshot.connectionState == ConnectionState.none) {
@@ -466,7 +613,9 @@ class _HomeState extends State<Home> {
                             ),
                           ),
                         ),
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                        )
                       ],
                     ),
                   ),
@@ -480,18 +629,29 @@ class _HomeState extends State<Home> {
   Color get randomColor =>
       Color((Random().nextDouble() * 0xFFFFFF).toInt() << 0).withOpacity(1.0);
 
-  Future<DocumentSnapshot> userName() async {
-    final auth = FirebaseAuth.instance;
-    final FirebaseUser user = await auth.currentUser();
+  Future<DocumentSnapshot> getData() {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User user = auth.currentUser;
     final uid = user.uid;
 
     if (user != null) {
       print(uid);
     }
 
-    return await Firestore.instance
+    return FirebaseFirestore.instance
         .collection("users")
-        .document(user.uid)
+        .doc(user.uid)
+        .get();
+  }
+
+  Future<DocumentSnapshot> retrieveDates() {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User user = auth.currentUser;
+    final uid = user.uid;
+
+    return FirebaseFirestore.instance
+        .collection("usersProjects")
+        .doc(user.uid)
         .get();
   }
 
@@ -569,20 +729,91 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void retrieveProjects() async {
+  void retrieveProjects() {
 
-    var firebaseUser = await FirebaseAuth.instance.currentUser();
-    firestoreInstance.collection("userProjects").document(firebaseUser.uid).get().then((value){
-      print(value.data["Projects"]);
+    var firebaseUser = FirebaseAuth.instance.currentUser;
+    firestoreInstance.collection("userProjects").doc(firebaseUser.uid).get().then((value){
 
-      for (int i = 0; i < value.data["Projects"].length; i++) {
-        projectTitleList.add(value.data["Projects"][i]);
+      for (int i = 0; i < value.data()["Projects"].length; i++) {
+        projectTitleList.add(value.data()["Projects"][i]);
       }
 
-      print(projectTitleList);
+    });
+
+  }
+
+  void checkSub() {
+    var firebaseUser = FirebaseAuth.instance.currentUser;
+
+    firestoreInstance
+        .collection("userProjects")
+        .doc(firebaseUser.uid)
+        .get()
+        .then((value) {
+          print(value.data()["docID"]);
+          for (int i = 0; i < value.data()["docID"].length; i++) {
+
+            docID.add(value.data()["docID"][i]);
+
+          }
+
+        });
+
+  }
+
+  String date;
+
+  void getTime() {
+    var firebaseUser = FirebaseAuth.instance.currentUser;
+
+    List projects = new List();
+
+    firestoreInstance.collection("userProjects").doc(firebaseUser.uid).get().then((value){
+
+      for (int i = 0; i < value.data()["Projects"].length; i++) {
+        projects.add(value.data()["Projects"][i]);
+      }
+
+      for (int i = 0; i < projects.length; i++) {
+
+        firestoreInstance
+            .collection("userProjects")
+            .doc(firebaseUser.uid)
+            .collection("${projectTitleList[i]}")
+            .doc("${docID[i]}")
+            .get()
+            .then((value) {
+
+          print(value.data()["Due Date"]);
+          date = value.data()["Due Date"];
+          projectTimeList.add("$date");
+
+        });
+
+      }
+
+
     });
 
 
+
+    for (int i = 0; i < projectTitleList.length; i++) {
+
+      firestoreInstance
+          .collection("userProjects")
+          .doc(firebaseUser.uid)
+          .collection("${projectTitleList[i]}")
+          .doc("${docID[i]}")
+          .get()
+          .then((value) {
+
+            print(value.data()["Due Date"]);
+            date = value.data()["Due Date"];
+            projectTimeList.add("$date");
+
+      });
+
+    }
   }
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -755,11 +986,8 @@ class CustomScrollPhysics extends ScrollPhysics {
 }
 
 class RandomColor {
-  final Color one = Colors.black;
-  final Color two = Colors.blue[200];
-  final Color three = Colors.deepPurple[200];
 
-  List<Color> hexColor = [Colors.black, Colors.blue[200], Colors.deepPurple[200]];
+  List<Color> hexColor = [Colors.cyan[700], Colors.blue[600], Colors.deepPurple[600], Colors.deepOrange[700],];
 
   static final _random = Random();
 
